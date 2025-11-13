@@ -50,7 +50,15 @@ jobs:
             pwd
             echo "🔹 Listing home directory:"
             ls -la ~/
-            cd ~/telegram-bot-ai || { echo "❌ Repo not found"; exit 1; }
+
+            # Check if repository exists, clone if not
+            if [ ! -d ~/telegram-bot-ai ]; then
+              echo "📦 Repository not found. Cloning from GitHub..."
+              git clone https://github.com/${{ github.repository }} ~/telegram-bot-ai
+              echo "✅ Repository cloned successfully"
+            fi
+            
+            cd ~/telegram-bot-ai || { echo "❌ Failed to enter repo directory"; exit 1; }
             echo "🔹 Pulling latest code from GitHub..."
             git pull origin main
             echo "🔹 Stopping and removing old containers..."
