@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  telegram-bot-ai:
+    build: .
+    image: telegram-bot-ai
+    container_name: telegram-bot-ai
+    restart: unless-stopped
+    environment:
+    - BOT_TOKEN=${BOT_TOKEN}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
