@@ -1,4 +1,4 @@
-name: Deploy Telegram Bot to Azure VM
+name: Deploy Telegram Bot AI to Azure VM
 
 on:
   workflow_dispatch:
@@ -53,10 +53,15 @@ jobs:
               exit 1
             fi
 
-            echo "🔹 Stopping and removing old containers..."
-            sudo docker compose down
-            echo "🔹 Rebuilding and starting new container..."
+            echo "🔹 Stopping and removing telegram-bot-ai container only..."
+            sudo docker compose stop telegram-bot-ai
+            sudo docker compose rm -f telegram-bot-ai
+            echo "🔹 Rebuilding telegram-bot-ai service..."
+            sudo docker compose build --no-cache telegram-bot-ai
+            echo "🔹 Starting telegram-bot-ai container..."
             sudo docker compose up -d telegram-bot-ai
-            echo "🔹 Checking container status..."
-            sudo docker compose ps
-            echo "✅ Bot redeployed successfully on $(hostname)!"
+            echo "🔹 Checking telegram-bot-ai container status..."
+            sudo docker compose ps telegram-bot-ai
+            echo "🔹 Checking telegram-bot-ai logs (last 20 lines)..."
+            sudo docker compose logs --tail=20 telegram-bot-ai
+            echo "✅ Telegram bot AI redeployed successfully on $(hostname)!"            
