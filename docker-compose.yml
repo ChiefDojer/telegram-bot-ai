@@ -7,8 +7,29 @@ services:
     container_name: telegram-bot-ai
     restart: unless-stopped
     environment:
+      # Bot Configuration
       - BOT_TOKEN=${BOT_TOKEN}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      
+      # Default AI Service (chatgpt, gemini, claude, grok, custom)
+      - DEFAULT_AI_SERVICE=${DEFAULT_AI_SERVICE:-chatgpt}
+      
+      # OpenAI ChatGPT Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      
+      # Google Gemini Configuration
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      
+      # Anthropic Claude Configuration
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      
+      # xAI Grok Configuration
+      - XAI_API_KEY=${XAI_API_KEY}
+      
+      # Custom LLM Configuration (e.g., Ollama, LM Studio)
+      - CUSTOM_LLM_BASE_URL=${CUSTOM_LLM_BASE_URL}
+      - CUSTOM_LLM_API_KEY=${CUSTOM_LLM_API_KEY}
+      - CUSTOM_LLM_MODEL=${CUSTOM_LLM_MODEL:-llama3}
     logging:
       driver: "json-file"
       options:

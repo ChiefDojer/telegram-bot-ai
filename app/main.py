@@ -45,7 +45,7 @@ async def main():
     dp.include_router(router)
     
     # Start polling
-    logger.info("Bot started successfully!")
+    logger.info("Bot started successfully with FSM support!")
     try:
         await dp.start_polling(bot)
     finally:
