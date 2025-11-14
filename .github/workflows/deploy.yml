@@ -62,8 +62,17 @@ jobs:
             echo "🔹 Pulling latest code from GitHub..."
             git pull origin main
 
-            echo "🔹 Setting environment variables for Docker Compose..."
-            export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+            echo "🔹 Creating .env file with BOT_TOKEN..."
+            echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > .env
+            echo "LOG_LEVEL=INFO" >> .env
+            echo "✅ .env file created"
+            echo "🔹 Verifying .env file (without showing token)..."
+            if [ -f .env ]; then
+              echo "✅ .env file exists with $(wc -l < .env) lines"
+            else
+              echo "❌ .env file not found!"
+              exit 1
+            fi
 
             echo "🔹 Stopping and removing old containers..."
             sudo docker compose down
