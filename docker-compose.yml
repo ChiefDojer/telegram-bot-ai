@@ -7,7 +7,7 @@ services:
     container_name: telegram-bot-ai
     restart: unless-stopped
     environment:
-    - BOT_TOKEN=${BOT_TOKEN}
+      - BOT_TOKEN=${BOT_TOKEN}
     logging:
       driver: "json-file"
       options:

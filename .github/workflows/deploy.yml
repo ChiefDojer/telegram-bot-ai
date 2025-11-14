@@ -61,10 +61,14 @@ jobs:
             cd ~/telegram-bot-ai || { echo "❌ Failed to enter repo directory"; exit 1; }
             echo "🔹 Pulling latest code from GitHub..."
             git pull origin main
+
+            echo "🔹 Setting environment variables for Docker Compose..."
+            export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+
             echo "🔹 Stopping and removing old containers..."
             sudo docker compose down
             echo "🔹 Rebuilding and starting new container..."
-            BOT_TOKEN=${{ secrets.BOT_TOKEN }} sudo docker compose up -d telegram-bot-ai
+            sudo docker compose up -d telegram-bot-ai
             echo "🔹 Checking container status..."
             sudo docker compose ps
             echo "✅ Bot redeployed successfully on $(hostname)!"
