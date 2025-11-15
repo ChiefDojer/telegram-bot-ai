@@ -1,6 +1,9 @@
 name: Deploy Telegram Bot AI to Azure VM
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
   workflow_run:
     workflows: ["Run Unit Tests"]

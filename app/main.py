@@ -31,6 +31,9 @@ logging.basicConfig(
     format="%(botname)s - %(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
+# Add the filter to root logger
+logging.getLogger().addFilter(BotNameFilter())
+logger = logging.getLogger(__name__)
 
 async def main():
     """Initialize and start the bot"""
