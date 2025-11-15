@@ -42,7 +42,7 @@ class AIService(ABC):
 class ChatGPTService(AIService):
     """OpenAI ChatGPT service"""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4o-mini", user_id: Optional[int] = None):
+    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-5-mini", user_id: Optional[int] = None):
         super().__init__(api_key or os.getenv("OPENAI_API_KEY"), user_id)
         self.model = model
         self.base_url = "https://api.openai.com/v1/chat/completions"
@@ -94,7 +94,7 @@ class ChatGPTService(AIService):
 class GeminiService(AIService):
     """Google Gemini service"""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-1.5-flash", user_id: Optional[int] = None):
+    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-2.5-flash", user_id: Optional[int] = None):
         super().__init__(api_key or os.getenv("GEMINI_API_KEY"), user_id)
         self.model = model
     
@@ -138,7 +138,7 @@ class GeminiService(AIService):
 class ClaudeService(AIService):
     """Anthropic Claude service"""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-5-sonnet-20241022", user_id: Optional[int] = None):
+    def __init__(self, api_key: Optional[str] = None, model: str = "claude-sonnet-4.5", user_id: Optional[int] = None):
         super().__init__(api_key or os.getenv("ANTHROPIC_API_KEY"), user_id)
         self.model = model
         self.base_url = "https://api.anthropic.com/v1/messages"
@@ -195,7 +195,7 @@ class ClaudeService(AIService):
 class GrokService(AIService):
     """xAI Grok service"""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "grok-beta", user_id: Optional[int] = None):
+    def __init__(self, api_key: Optional[str] = None, model: str = "grok-4-fast", user_id: Optional[int] = None):
         super().__init__(api_key or os.getenv("XAI_API_KEY"), user_id)
         self.model = model
         self.base_url = "https://api.x.ai/v1/chat/completions"
@@ -250,7 +250,7 @@ class CustomLLMService(AIService):
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, model: str = "custom-model", user_id: Optional[int] = None):
         super().__init__(api_key or os.getenv("CUSTOM_LLM_API_KEY"), user_id)
         self.base_url = base_url or os.getenv("CUSTOM_LLM_BASE_URL", "http://localhost:11434/v1/chat/completions")
-        self.model = model or os.getenv("CUSTOM_LLM_MODEL", "llama3")
+        self.model = model or os.getenv("CUSTOM_LLM_MODEL", "llama-3.3-70b")
     
     def is_available(self, user_token: Optional[str] = None) -> bool:
         return bool(self.base_url)

@@ -161,14 +161,135 @@ async def back_to_providers(callback: CallbackQuery, state: FSMContext):
 async def cmd_help(message: Message):
     await message.answer(
         "<b>📚 Commands:</b>\n\n"
-        "/start - Setup AI\n"
-        "/settoken - Add token\n"
-        "/removetoken - Remove token\n"
-        "/myconfig - Show config\n"
-        "/cleardata - Clear all data\n"
+        "/start - Setup AI provider\n"
+        "/settoken - Add/update API token\n"
+        "/removetoken - Remove API token\n"
+        "/myconfig - Show your configuration\n"
         "/clear - Clear chat history\n"
-        "/about - About bot"
+        "/cleardata - Clear all data & tokens\n"
+        "/about - About this bot"
     )
+
+@router.message(Command("settoken"))
+async def cmd_settoken(message: Message, state: FSMContext):
+    """Set or update API token for a provider"""
+    await state.set_state(TokenManagement.selecting_provider_for_token)
+    user_id = message.from_user.id
+    all_services = ai_manager.get_all_services()
+    
+    keyboard_buttons = []
+    for service_id, service in all_services.items():
+        has_token = "✅" if user_token_manager.has_token(user_id, service_id) else "➕"
+        keyboard_buttons.append([
+            InlineKeyboardButton(
+                text=f"{has_token} {service.name}",
+                callback_data=f"settoken_{service_id}"
+            )
+        ])
+    
+    keyboard_buttons.append([InlineKeyboardButton(text="❌ Cancel", callback_data="cancel_settoken")])
+    keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+    
+    await message.answer(
+        "🔑 <b>Select provider to set/update token:</b>\n\n"
+        "✅ = Token already set\n"
+        "➕ = No token yet",
+        reply_markup=keyboard
+    )
+
+@router.callback_query(F.data.startswith("settoken_"), StateFilter(TokenManagement.selecting_provider_for_token))
+async def handle_settoken_provider(callback: CallbackQuery, state: FSMContext):
+    provider_id = callback.data.replace("settoken_", "")
+    await state.update_data(selected_provider=provider_id)
+    
+    instructions = {
+        "chatgpt": "https://platform.openai.com/api-keys",
+        "gemini": "https://makersuite.google.com/app/apikey",
+        "claude": "https://console.anthropic.com/",
+        "grok": "https://console.x.ai/",
+        "custom": "Your custom LLM endpoint"
+    }
+    
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel_settoken")]
+    ])
+    
+    await state.set_state(TokenManagement.entering_new_token)
+    await callback.message.edit_text(
+        f"🔑 <b>Enter API token for {provider_id.upper()}</b>\n\n"
+        f"Get it from: {instructions.get(provider_id, 'API provider')}\n\n"
+        "⚠️ Token stored only in memory\n"
+        "Send your API key now:",
+        reply_markup=keyboard
+    )
+    await callback.answer()
+
+@router.message(StateFilter(TokenManagement.entering_new_token))
+async def receive_new_token(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    token = message.text.strip()
+    
+    try:
+        await message.delete()
+    except:
+        pass
+    
+    data = await state.get_data()
+    provider_id = data.get("selected_provider")
+    user_token_manager.set_token(user_id, provider_id, token)
+    
+    await state.clear()
+    await message.answer(f"✅ Token saved for {provider_id.upper()}!")
+
+@router.callback_query(F.data == "cancel_settoken")
+async def cancel_settoken(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
+    await callback.message.edit_text("❌ Cancelled.")
+    await callback.answer()
+
+@router.message(Command("removetoken"))
+async def cmd_removetoken(message: Message, state: FSMContext):
+    """Remove API token for a provider"""
+    user_id = message.from_user.id
+    user_providers = user_token_manager.get_user_providers(user_id)
+    
+    if not user_providers:
+        await message.answer("❌ You don't have any tokens saved.")
+        return
+    
+    keyboard_buttons = []
+    for provider_id in user_providers:
+        service = ai_manager.get_service(provider_id)
+        if service:
+            keyboard_buttons.append([
+                InlineKeyboardButton(
+                    text=f"🗑️ {service.name}",
+                    callback_data=f"removetoken_{provider_id}"
+                )
+            ])
+    
+    keyboard_buttons.append([InlineKeyboardButton(text="❌ Cancel", callback_data="cancel_removetoken")])
+    keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+    
+    await message.answer(
+        "🗑️ <b>Select provider to remove token:</b>",
+        reply_markup=keyboard
+    )
+
+@router.callback_query(F.data.startswith("removetoken_"))
+async def handle_removetoken(callback: CallbackQuery):
+    provider_id = callback.data.replace("removetoken_", "")
+    user_id = callback.from_user.id
+    
+    user_token_manager.remove_token(user_id, provider_id)
+    
+    await callback.message.edit_text(f"✅ Token removed for {provider_id.upper()}!")
+    await callback.answer()
+
+@router.callback_query(F.data == "cancel_removetoken")
+async def cancel_removetoken(callback: CallbackQuery):
+    await callback.message.edit_text("❌ Cancelled.")
+    await callback.answer()
 
 @router.message(Command("myconfig"))
 async def cmd_myconfig(message: Message):

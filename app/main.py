@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
+from aiogram.types import BotCommand
 
 # Import handlers
 from handlers import router
@@ -53,6 +54,18 @@ async def main():
     
     # Register handlers
     dp.include_router(router)
+    
+    # Set bot commands for the menu
+    await bot.set_my_commands([
+        BotCommand(command="start", description="🚀 Setup AI Provider"),
+        BotCommand(command="help", description="📚 Show help & commands"),
+        BotCommand(command="myconfig", description="⚙️ View your configuration"),
+        BotCommand(command="settoken", description="🔑 Add/update API token"),
+        BotCommand(command="removetoken", description="🗑️ Remove API token"),
+        BotCommand(command="clear", description="🧹 Clear chat history"),
+        BotCommand(command="cleardata", description="⚠️ Clear all data & tokens"),
+        BotCommand(command="about", description="ℹ️ About this bot")
+    ])
     
     # Start polling
     logger.info("Bot started successfully with FSM support!")
