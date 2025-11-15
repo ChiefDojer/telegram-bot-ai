@@ -1,11 +1,10 @@
-version: '3.8'
-
 services:
   telegram-bot-ai:
     build: .
     image: telegram-bot-ai
     container_name: telegram-bot-ai
     restart: unless-stopped
+    mem_limit: 512m   
     environment:
       # Bot Configuration
       - BOT_TOKEN=${BOT_TOKEN}

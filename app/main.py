@@ -16,13 +16,20 @@ from handlers import router
 # Load environment variables
 load_dotenv()
 
-# Configure logging
+# Get bot name from environment
+BOT_NAME = os.getenv("BOT_NAME", "TelegramBot-AI")
+
+# Configure logging with custom factory to add botname
+class BotNameFilter(logging.Filter):
+    def filter(self, record):
+        record.botname = BOT_NAME
+        return True
+
 log_level = os.getenv("LOG_LEVEL", "INFO")
 logging.basicConfig(
     level=getattr(logging, log_level),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(botname)s - %(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
-logger = logging.getLogger(__name__)
 
 
 async def main():
