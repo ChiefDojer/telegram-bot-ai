@@ -315,13 +315,42 @@ class AIServiceManager:
         }
         self.default_service = os.getenv("DEFAULT_AI_SERVICE", "chatgpt")
         
-        # Available models for each provider
+        # Updated model list for late 2025
         self.available_models = {
-            "chatgpt": ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"],
-            "gemini": ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-pro"],
-            "claude": ["claude-3-5-sonnet-20241022", "claude-3-opus-20240229", "claude-3-sonnet-20240229"],
-            "grok": ["grok-beta", "grok-vision-beta"],
-            "custom": ["llama3", "mistral", "custom-model"]
+            "chatgpt": [
+                "gpt-5",           # Top-tier, complex reasoning
+                "gpt-5-mini",      # Balanced performance and speed
+                "gpt-4.1",         # Successor to GPT-4 Turbo
+                "gpt-4o",          # Still a strong, fast multimodal option
+                "gpt-4o-mini"      # Excellent for fast, scalable tasks
+                # "gpt-4-turbo" and "gpt-3.5-turbo" are now deprecated or legacy
+            ],
+            "gemini": [
+                "gemini-2.5-pro",  # The new high-end, flagship model
+                "gemini-2.5-flash" # The new fast, cost-effective model
+                # "gemini-1.5-pro", "gemini-1.5-flash", and "gemini-pro" (1.0)
+                # are all superseded by the 2.5 series
+            ],
+            "claude": [
+                "claude-opus-4.1",     # Top-tier reasoning (replaces 3.0 Opus)
+                "claude-sonnet-4.5",   # Main workhorse model (replaces 3.5 Sonnet)
+                "claude-haiku-4.5"     # Fastest, most compact model
+                # The Claude 3.x series is now legacy
+            ],
+            "grok": [
+                "grok-4",              # Top-tier model from xAI
+                "grok-4-fast",         # Faster, more economical version
+                "grok-code-fast-1"     # Specialized for coding tasks
+                # "grok-beta" and "grok-vision-beta" are very old demo names
+            ],
+            "custom": [
+                # Note: These are model families. The exact ID depends on your provider
+                # (e.g., Ollama, Groq, Replicate, or Hugging Face)
+                "llama-4-scout",       # Meta's latest generation
+                "llama-3.3-70b",       # Most advanced of the Llama 3 series
+                "magistral-medium",    # Mistral's latest proprietary model
+                "devstral-small"       # Mistral's latest open-weight code model
+            ]
         }
     
     def get_service(self, service_name: str, model: Optional[str] = None, user_id: Optional[int] = None) -> Optional[AIService]:
